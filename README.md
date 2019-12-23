@@ -14,7 +14,7 @@
 
 - config를 통해 .env에 있는 key를 불러오고 requests로 요청보내기
 
-- 미세먼지를 물어보면 좋다고 해주자 (나중 구현 예정)
+- 미세먼지를 물어보면 네이버에서 크롤링하여 가져오기
 
   app.py
 
@@ -22,6 +22,7 @@
 from flask import Flask, render_template, request
 import requests
 from decouple import config
+import bs4
 
 app = Flask(__name__)
 
@@ -37,8 +38,11 @@ commands = [
     '/미세먼지',
 ]
 
+@app.route('/')
+def index():
+    return ':)'
 
-@app.route(f'/{secret_url}', methods=['POST'])
+@app.route('/chatbot', methods=['POST'])
 def telegram():
     req = request.get_json()
     user = req['message']['from']['id']  # user의 chat id
@@ -66,7 +70,20 @@ def telegram():
                 result = no_error
         else:  # 띄어쓰기 없음
             if message == '/미세먼지':
-                result = '좋음'
+                url = 'https://search.naver.com/search.naver?sm=top_hty&fbm=0&ie=utf8&query=%EB%AF%B8%EC%84%B8%EB%A8%BC%EC%A7%80'
+                response = requests.get(url).text
+                #url에서 data 가져오기
+                text = bs4.BeautifulSoup(response, 'html.parser')
+                #Python에서 select_one을 쓸 수 있게 하는 함수, data를 예쁘게 만들어서 알아볼 수 있게 함.
+                # print(text)
+                dust = text.select_one('#main_pack > div.content_search.section._atmospheric_environment > div > div.contents03_sub > div > div > div.main_box > div.detail_box > div.tb_scroll > table > tbody').text.replace('   ', ', ')
+                # t1 = dust.select_one('span.lv2').text
+
+
+                #데이터에서 필요한 정보만 추출
+                print(dust)
+                # print(t1)
+
             else:
                 result = no_error
     else:
@@ -82,11 +99,27 @@ if __name__ == '__main__':
 
 
 
-### 3. 사이트 세부 기능과 이미지
+### 3. 배포
+
+##### PythonAnywhere을 사용하여 배포하기
+
+* PythonAnywhere 가입하여 블로그 만들기
+
+* 필요 파일 만들기![1577102553834](./images/1577102553834.png)
+
+* Web에 new app 만들기
+
+* 수정 시 Files에서 수정 후 반드시 Reload !
+
+  ![1577102501395](./images/1577102501395.png)
+
+
+
+### 4. 사이트 세부 기능과 이미지
 
 ![1576364115668](./images/1576325019267.png)
 
-### 4. 프로젝트를 마치며
+### 5. 프로젝트를 마치며
 
 Flask라는 framework에서 NaverAPI를 이용하여 데이터를 제공하는 Telegram bot을 만들었다. Chatbot을 만드는 것이 큰 프로젝트라 생각했는데 telegram에서 제공된 것을 사용하니 더 편리하게 이용할 수 있었다. 
 
