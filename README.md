@@ -2,6 +2,7 @@
 
 ### 1. 목표
 
+
 	i. Flask framework 사용해보기
 
 	ii. 네이버 API를 이용하여 '/번역 <keyword>'를 입력하면 keyword를 번역요청 후 번역된 		메세지를 user에게 보내기
