@@ -21,7 +21,7 @@ codecov==2.0.15
 colorama==0.4.1
 constantly==15.1.0
 coverage==4.3.3
-cryptography==2.8
+cryptography==3.2
 cycler==0.10.0
 Cython==0.29.14
 daphne==0.15.0
